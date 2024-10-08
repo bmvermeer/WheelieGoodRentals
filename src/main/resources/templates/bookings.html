@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Bookings</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Bookings</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Booking Reference</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Car</th>
+                    <th>Plate</th>
+                    <th>User</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="booking : ${bookings}">
+                    <td th:text="${booking.bookingReference}"></td>
+                    <td th:text="${booking.startDate}"></td>
+                    <td th:text="${booking.endDate}"></td>
+                    <td th:text="${booking.car.brand} + ' ' + ${booking.car.model}"></td>
+                    <td th:text="${booking.car.licensePlate}"></td>
+                    <td th:text="${booking.user.username}"></td>
+                    <td th:text="${booking.price}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

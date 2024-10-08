@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chat with Ollama</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body class="d-flex flex-column vh-100">
+<div class="container-fluid d-flex flex-column flex-grow-1">
+    <h1 class="text-center my-4">Chat with Ollama</h1>
+    <div class="chat-box flex-grow-1 overflow-auto p-3 border rounded mb-3" id="chatBox">
+        <div th:each="msg : ${chatHistory}">
+            <p th:text="${msg}"></p>
+        </div>
+    </div>
+    <form action="/chat" method="post" class="d-flex p-3 border-top" id="chatForm">
+        <textarea name="message" placeholder="Type your message here..." required rows="1" class="form-control me-2" id="messageInput"></textarea>
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+</div>
+<script>
+    // Auto-scroll to the bottom of the chat box
+    const chatBox = document.getElementById('chatBox');
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // Handle Enter key press to submit the form
+    const messageInput = document.getElementById('messageInput');
+    const chatForm = document.getElementById('chatForm');
+    messageInput.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            chatForm.submit();
+        }
+    });
+</script>
+</body>
+</html>

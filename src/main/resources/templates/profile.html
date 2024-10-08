@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Profile</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1>Profile</h1>
+    <form th:action="@{/profile}" method="post">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" name="name" th:value="${user.username}" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" name="email" th:value="${user.email}" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="text" class="form-control" id="phone" name="phone" th:value="${user.phoneNumber}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+    </form>
+    <div th:if="${param.success}">
+        <p class="text-success">Profile updated successfully!</p>
+    </div>
+</div>
+<hr>
+<div class="container mt-5">
+    <h3>Documents</h3>
+    <form th:action="@{/profile/upload}" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Upload documents</label>
+            <input type="file" class="form-control-file" id="file" name="file" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
+    <!-- List of uploaded files -->
+    <ul>
+        <li th:each="file : ${files}">
+            <a th:href="@{'/upload/' + ${user.username} + '/' + ${file}}" th:text="${file}"></a>
+            <form th:action="@{/profile/delete}" method="post" style="display:inline;">
+                <input type="hidden" name="fileName" th:value="${user.username} + '/' + ${file}">
+                <button type="submit" class="btn btn-link">
+                    <img src="/images/delete-icon.png" alt="Delete" style="width:16px;height:16px;">
+                </button>
+            </form>
+        </li>
+    </ul>
+</div>
+</body>
+</html>

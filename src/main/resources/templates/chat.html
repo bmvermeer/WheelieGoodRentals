@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chat with an Assistant</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script type="text/javascript">
+        var stompClient = null;
+
+        var conversationId = [[${conversationId}]];
+
+        function connect() {
+            var socket = new SockJS('/chat');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/messages', function (messageOutput) {
+                    showMessage(JSON.parse(messageOutput.body));
+                });
+            });
+        }
+
+        function sendMessage(event) {
+            var messageContent = document.getElementById('messageInput').value;
+            stompClient.send("/app/message", {conversationId: conversationId}, JSON.stringify({'sender': 'user', 'content': messageContent}));
+            //log the conversationId
+            console.log('conversationId: ' + conversationId);
+            showMessage({'sender': 'user', 'content': messageContent, 'conversationId': conversationId});
+            document.getElementById('messageInput').value = '';
+            event.preventDefault();
+        }
+
+        function showMessage(message) {
+            var chatBox = document.getElementById('chatBox');
+            var p = document.createElement('p');
+            // p.appendChild(document.createTextNode(message.sender + ": " + message.content));
+            p.innerHTML = message.sender + ": " + message.content;
+            chatBox.appendChild(p);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        window.onload = function() {
+            connect();
+            const messageInput = document.getElementById('messageInput');
+            messageInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    document.getElementById('chatForm').dispatchEvent(new Event('submit', { 'bubbles': true, 'cancelable': true }));
+                }
+            });
+        };
+    </script>
+</head>
+<body class="d-flex flex-column vh-100">
+<div class="container-fluid d-flex flex-column flex-grow-1">
+    <h1 class="text-center my-4">Chat with Assistant</h1>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="conversations-list">
+                <h3>Conversations</h3>
+                <ul>
+                    <li th:each="conversation : ${conversations}">
+                        <a th:href="@{/chat(conversationId=${conversation.id})}" th:text="${conversation.label}"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="chat-box flex-grow-1 overflow-auto p-3 border rounded mb-3" id="chatBox" style="height: 500px;">
+                <div th:each="message : ${messages}">
+                    <p th:text="${message.sender} + ': ' + ${message.content}"></p>
+                </div>
+            </div>
+            <form class="d-flex p-3 border-top justify-content-center" id="chatForm" onsubmit="sendMessage(event)">
+                <textarea id="messageInput" placeholder="Type your message here..." required rows="1" class="form-control me-2"></textarea>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+<!--    <div class="chat-box flex-grow-1 overflow-auto p-3 border rounded mb-3 w-75 mx-auto" id="chatBox" style="height: 500px;">-->
+<!--        <div th:each="message : ${messages}">-->
+<!--            <p th:text="${message.sender} + ': ' + ${message.content}"></p>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <form class="d-flex p-3 border-top justify-content-center w-75 mx-auto" id="chatForm" onsubmit="sendMessage(event)">-->
+<!--        <textarea id="messageInput" placeholder="Type your message here..." required rows="1" class="form-control me-2 w-75"></textarea>-->
+<!--        <button type="submit" class="btn btn-primary">Send</button>-->
+<!--    </form>-->
+</div>
+</body>
+</html>
