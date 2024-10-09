@@ -40,7 +40,6 @@ public class Tools {
     @Tool
     public String availableCars(Object a) {
         logger.warn("CALLED FUNCTION availableCars {}", a);
-        // output all cars available in a string use a stream to map the cars to a string
         List<Car> cars = carService.getAllCars();
         return cars.stream().map(Car::toString).reduce("", (x, y) -> x + y + "\n");
     }
