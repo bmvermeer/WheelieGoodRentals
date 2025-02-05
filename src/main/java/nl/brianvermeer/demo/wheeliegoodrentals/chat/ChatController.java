@@ -51,7 +51,16 @@ public class ChatController {
         var context = getContext(sessionId, conversationId);
 
         var assistant = context.assistant;
-        var response = assistant.answer(message.getContent());
+        String response = "";
+        for (int i = 0; i < 3; i++) {
+            try {
+                response = assistant.answer(message.getContent());
+                break;
+            } catch (Exception e) {
+                logger.error("Operation failed, retrying", e);
+            }
+            response = "Something went wrong, please try again";
+        }
         var botResponse = new ChatMessage("Assistant", response);
 
         Conversation conversation = context.getConversation();
@@ -63,6 +72,22 @@ public class ChatController {
         // Return bot's response
         return botResponse;
     }
+
+    //write me a method that catches an exception and retries the operation 3 times
+    @Transactional
+    public void retryOperation(int retries, Runnable operation) {
+        for (int i = 0; i < retries; i++) {
+            try {
+                operation.run();
+                return;
+            } catch (Exception e) {
+                logger.error("Operation failed, retrying", e);
+            }
+        }
+        throw new RuntimeException("Operation failed after " + retries + " retries");
+    }
+
+    //write me a method that catches an exception and retries the operation 3 times
 
 
     private ChatContext getContext(String sessionId, String conversationId) {

@@ -13,6 +13,8 @@ public class ChatModelFactory {
     private static final String BASE_URL = "http://127.0.0.1:11434/";
 
     private static final Double TEMPERATURE = 0.3;
+    public static final String MODEL_LLAMA_3_3 = "llama3.3";
+    public static final String MODEL_LLAMA_3_2 = "llama3.2";
     public static final String MODEL_LLAMA_3_1 = "llama3.1";
     public static final String MODEL_PHI_3 = "phi3";
     public static final String MODEL_GEMMA2 = "gemma2";

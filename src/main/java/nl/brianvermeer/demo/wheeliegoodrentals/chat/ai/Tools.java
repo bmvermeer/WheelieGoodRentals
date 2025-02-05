@@ -2,6 +2,7 @@ package nl.brianvermeer.demo.wheeliegoodrentals.chat.ai;
 
 import dev.langchain4j.agent.tool.P;
 import dev.langchain4j.agent.tool.Tool;
+import nl.brianvermeer.demo.wheeliegoodrentals.model.Booking;
 import nl.brianvermeer.demo.wheeliegoodrentals.model.Car;
 import nl.brianvermeer.demo.wheeliegoodrentals.model.Role;
 import nl.brianvermeer.demo.wheeliegoodrentals.model.User;
@@ -37,7 +38,7 @@ public class Tools {
         return currentTime.toString();
     }
 
-    @Tool
+    @Tool("Get all available cars")
     public String availableCars(Object a) {
         logger.warn("CALLED FUNCTION availableCars {}", a);
         List<Car> cars = carService.getAllCars();
@@ -83,5 +84,20 @@ public class Tools {
     public User createNewUser(@P("Username for the new user") String username, @P("The password for the new User") String password, @P("The email of the new User") String email, @P("The phonenumber for the new User") String phonenumber) {
         logger.warn("CALLED FUNCTION createNewUser {} {} {} {}",username, password, email, phonenumber);
         return userService.createUser(username, password, email, phonenumber, Role.USER);
+    }
+
+    @Tool("Delete a user")
+    public void deleteUser(@P("UserId of the user to delete") Long userId) {
+        logger.warn("CALLED FUNCTION deleteUser {}", userId);
+        userService.deleteUser(userId);
+    }
+
+    @Tool("Get all bookings for a user by username")
+    public String getBookingByUser(@P("Username of the user") String username) {
+        logger.warn("CALLED FUNCTION getBookingByUser {}", username);
+        var user = userService.getUserByUsername(username).orElseThrow( () -> new IllegalArgumentException("User not found"));
+        var bookings = bookingService.getAllBookingsForUser(user);
+        //concatenate the bookings as a string
+        return bookings.stream().map(Booking::toString).reduce("", (x, y) -> x + y + "\n");
     }
 }

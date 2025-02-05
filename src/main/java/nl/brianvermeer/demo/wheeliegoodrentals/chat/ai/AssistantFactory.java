@@ -64,8 +64,8 @@ public class AssistantFactory {
         }
 
         return AiServices.builder(Assistant.class)
-//                .chatLanguageModel(chatModelFactory.createOpenAiChatModel())
-                .chatLanguageModel(chatModelFactory.createOllamaChatModel(ChatModelFactory.MODEL_LLAMA_3_1))
+                .chatLanguageModel(chatModelFactory.createOpenAiChatModel())
+//                .chatLanguageModel(chatModelFactory.createOllamaChatModel(ChatModelFactory.MODEL_LLAMA_3_1))
                 .chatMemory(chatMemory)
                 .contentRetriever(documentRetriever())
                 .tools(new Tools(carService, userService, bookingService))
