@@ -21,9 +21,13 @@ public class BookingService {
     }
 
     public Booking createBooking(User user, Car car, LocalDate startDate, LocalDate endDate) {
+        return createBooking(user, car, startDate, endDate, generateBookingReference());
+    }
+
+    public Booking createBooking(User user, Car car, LocalDate startDate, LocalDate endDate, String reference) {
         long days = ChronoUnit.DAYS.between(startDate, endDate);
         double price = days * car.getPricePerDay() + 1;
-        Booking booking = new Booking(generateBookingReference(), startDate, endDate, car, user, price);
+        Booking booking = new Booking(reference, startDate, endDate, car, user, price);
         return bookingRepository.save(booking);
     }
 

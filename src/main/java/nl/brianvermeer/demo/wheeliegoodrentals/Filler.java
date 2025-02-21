@@ -43,7 +43,8 @@ public class Filler {
     public void createStaticData() {
         var user = userService.createUser("brian", "brian", "brian@brianvermeer.nl", "+31612345678", Role.USER);
         var car = carService.createCar("1-ABC-123", "Model S", "Tesla", 160.0);
-        bookingService.createBooking(user, car, LocalDate.now().plusDays(1), LocalDate.now().plusDays(2));
+        bookingService.createBooking(user, car, LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), "abc-123");
+        bookingService.createBooking(user, car, LocalDate.now().plusDays(15), LocalDate.now().plusDays(20), "xyz-321");
 
         userService.createUser("admin", "admin", "admin@admin.nl", "+31612345678", Role.ADMIN);
     }
