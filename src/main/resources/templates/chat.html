@@ -34,6 +34,9 @@
         function showMessage(message) {
             var chatBox = document.getElementById('chatBox');
             var p = document.createElement('p');
+            if (message.sender.toLowerCase() === 'system') {
+                p.className = 'alert alert-warning';
+            }
             // p.appendChild(document.createTextNode(message.sender + ": " + message.content));
             p.innerHTML = message.sender + ": " + message.content;
             chatBox.appendChild(p);
@@ -59,8 +62,9 @@
         <div class="col-md-3">
             <div class="conversations-list">
                 <h3>Conversations</h3>
-                <ul>
-                    <li th:each="conversation : ${conversations}">
+                <!-- Updated conversation list using Bootstrap list group -->
+                <ul class="list-group">
+                    <li th:each="conversation : ${conversations}" class="list-group-item">
                         <a th:href="@{/chat(conversationId=${conversation.id})}" th:text="${conversation.label}"></a>
                     </li>
                 </ul>
@@ -69,6 +73,8 @@
         <div class="col-md-9">
             <div class="chat-box flex-grow-1 overflow-auto p-3 border rounded mb-3" id="chatBox" style="height: 500px;">
                 <div th:each="message : ${messages}">
+<!--                    <p th:classappend="${message.sender.toLowerCase() == 'system' ? 'alert alert-warning' : (message.sender.toLowerCase() == 'assistant' ? 'alert alert-info' : 'alert alert-success')}"-->
+<!--                       th:text="${message.sender} + ': ' + ${message.content}"></p>-->
                     <p th:text="${message.sender} + ': ' + ${message.content}"></p>
                 </div>
             </div>

@@ -7,16 +7,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static nl.brianvermeer.demo.wheeliegoodrentals.controller.MessageUtil.addErrorMessage;
+import static nl.brianvermeer.demo.wheeliegoodrentals.controller.MessageUtil.addSuccessMessage;
 
 @Controller
 public class UserController {
@@ -47,28 +51,31 @@ public class UserController {
             List<String> files = Files.list(Paths.get(uploadDir))
                     .map(Path::getFileName)
                     .map(Path::toString)
-                    .collect(Collectors.toList());
+                    .toList();
             model.addAttribute("files", files);
         } catch (IOException e) {
+            addErrorMessage(model, "Failed to load files.");
             model.addAttribute("files", List.of());
         }
         return "layout";
     }
 
     @PostMapping("/profile")
-    public String updateProfile(@RequestParam String name, @RequestParam String email, @RequestParam String phone, @AuthenticationPrincipal UserDetails userDetails) {
+    public String updateProfile(@RequestParam String name, @RequestParam String email, @RequestParam String phone, @AuthenticationPrincipal UserDetails userDetails, RedirectAttributes redirectAttributes) {
         User user = userService.getUserByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("user with username " + userDetails.getUsername() + " not found"));
         user.setUsername(name);
         user.setEmail(email);
         user.setPhoneNumber(phone);
         userService.updateUser(user);
-        return "redirect:/profile?success";
+        addSuccessMessage(redirectAttributes, "Profile updated successfully!");
+        return "redirect:/profile";
     }
 
     @PostMapping("/profile/upload")
-    public String handleFileUpload(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal UserDetails userDetails) {
+    public String handleFileUpload(@RequestParam("file") MultipartFile file, @AuthenticationPrincipal UserDetails userDetails, RedirectAttributes redirectAttributes) {
         if (file.isEmpty()) {
-            return "redirect:/profile?error";
+            addErrorMessage(redirectAttributes, "Please select a file to upload.");
+            return "redirect:/profile";
         }
 
         User user = userService.getUserByUsername(userDetails.getUsername()).orElseThrow(() -> new IllegalArgumentException("user with username " + userDetails.getUsername() + " not found"));
@@ -85,22 +92,46 @@ public class UserController {
             Files.write(fileNameAndPath, file.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
-            return "redirect:/profile?error";
+            addErrorMessage(redirectAttributes, "Failed to upload file " + file.getOriginalFilename());
+            return "redirect:/profile";
         }
 
-        return "redirect:/profile?success";
+        addSuccessMessage(redirectAttributes, file.getOriginalFilename() + " uploaded successfully!");
+        return "redirect:/profile";
     }
 
     @PostMapping("/profile/delete")
-    public String deleteFile(@RequestParam("fileName") String fileName, Model model) {
+    public String deleteFile(@RequestParam("fileName") String fileName, RedirectAttributes redirectAttributes) {
         Path filePath = Paths.get("upload", fileName);
+
         try {
             Files.deleteIfExists(filePath);
-            model.addAttribute("message", "File deleted successfully!");
+            addSuccessMessage(redirectAttributes, filePath.getFileName() + " deleted successfully!");
         } catch (IOException e) {
-            model.addAttribute("message", "Failed to delete file.");
+            addErrorMessage(redirectAttributes, "Failed to delete file " + filePath.getFileName());
         }
         return "redirect:/profile";
+    }
+
+    //delete user
+    @GetMapping("/users/delete/{id}")
+    public String deleteUser(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails, Model model) {
+        model.addAttribute("view", "home");
+
+
+        if (!userDetails.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            addSuccessMessage(model, "You do not have permission to delete users.");
+            return "layout";
+        }
+
+        if (userService.getUserById(id).isPresent()) {
+            userService.deleteUser(id);
+            addSuccessMessage(model, "User deleted successfully!");
+        } else {
+            addErrorMessage(model, "User not found.");
+        }
+
+        return "layout";
     }
 
 

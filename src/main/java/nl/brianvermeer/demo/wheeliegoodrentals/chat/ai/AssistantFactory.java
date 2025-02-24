@@ -25,6 +25,7 @@ import nl.brianvermeer.demo.wheeliegoodrentals.service.CarService;
 import nl.brianvermeer.demo.wheeliegoodrentals.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -42,13 +43,15 @@ public class AssistantFactory {
     private CarService carService;
     private UserService userService;
     private BookingService bookingService;
+    private SimpMessagingTemplate messagingTemplate;
 
-    public AssistantFactory(ChatModelFactory chatModelFactory,ChatMessageRepository chatMessageRepository, CarService carService, UserService userService, BookingService bookingService) {
+    public AssistantFactory(ChatModelFactory chatModelFactory,ChatMessageRepository chatMessageRepository, CarService carService, UserService userService, BookingService bookingService, SimpMessagingTemplate messagingTemplate) {
         this.chatModelFactory = chatModelFactory;
         this.chatMessageRepository = chatMessageRepository;
         this.carService = carService;
         this.userService = userService;
         this.bookingService = bookingService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     public Assistant createAssistant(Conversation conversation) {
@@ -68,7 +71,7 @@ public class AssistantFactory {
 //                .chatLanguageModel(chatModelFactory.createOllamaChatModel(ChatModelFactory.MODEL_LLAMA_3_1))
                 .chatMemory(chatMemory)
                 .contentRetriever(documentRetriever())
-                .tools(new Tools(carService, userService, bookingService))
+                .tools(new Tools(carService, userService, bookingService, messagingTemplate))
                 .build();
     }
 

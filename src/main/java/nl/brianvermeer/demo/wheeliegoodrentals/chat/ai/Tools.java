@@ -2,6 +2,7 @@ package nl.brianvermeer.demo.wheeliegoodrentals.chat.ai;
 
 import dev.langchain4j.agent.tool.P;
 import dev.langchain4j.agent.tool.Tool;
+import nl.brianvermeer.demo.wheeliegoodrentals.chat.ChatMessage;
 import nl.brianvermeer.demo.wheeliegoodrentals.model.Booking;
 import nl.brianvermeer.demo.wheeliegoodrentals.model.Car;
 import nl.brianvermeer.demo.wheeliegoodrentals.model.Role;
@@ -11,6 +12,7 @@ import nl.brianvermeer.demo.wheeliegoodrentals.service.CarService;
 import nl.brianvermeer.demo.wheeliegoodrentals.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,13 +23,15 @@ public class Tools {
     private CarService carService;
     private UserService userService;
     private BookingService bookingService;
+    private SimpMessagingTemplate messagingTemplate;
 
     private static final Logger logger = LoggerFactory.getLogger(Tools.class);
 
-    public Tools(CarService carService, UserService userService, BookingService bookingService) {
+    public Tools(CarService carService, UserService userService, BookingService bookingService, SimpMessagingTemplate messagingTemplate) {
         this.carService = carService;
         this.userService = userService;
         this.bookingService = bookingService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Tool("Get the current date and time")
@@ -87,9 +91,11 @@ public class Tools {
     }
 
     @Tool("Delete a user")
-    public void deleteUser(@P("UserId of the user to delete") Long userId) {
-        logger.warn("CALLED FUNCTION deleteUser {}", userId);
-        userService.deleteUser(userId);
+    public String deleteUser(@P("username of the user") String userName) {
+        logger.warn("CALLED FUNCTION deleteUser {}", userName);
+        var user = userService.getUserByUsername(userName).orElseThrow( () -> new IllegalArgumentException("User not found"));
+        sendSystemMessage("confirm deletion of user <a href='/users/delete/" + user.getId() + "'> here </a>");
+        return "the user is not yet removes, please confirm the deletion by clicking the link that is on screen now!";
     }
 
     @Tool("Get all bookings for a user by username")
@@ -100,4 +106,9 @@ public class Tools {
         //concatenate the bookings as a string
         return bookings.stream().map(Booking::toString).reduce("", (x, y) -> x + y + "\n");
     }
+
+    private void sendSystemMessage(String message) {
+        messagingTemplate.convertAndSend("/topic/messages", new ChatMessage("System", message));
+    }
+
 }

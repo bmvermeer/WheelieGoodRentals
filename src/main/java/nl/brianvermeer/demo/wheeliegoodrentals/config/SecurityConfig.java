@@ -34,7 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/css/**", "/images/**", "/signup").permitAll()
                         .requestMatchers("/home").permitAll()
                         .requestMatchers("/terms/**").permitAll()
-                        .requestMatchers("/users").hasRole("ADMIN")
+                        .requestMatchers("/users/**").hasRole("ADMIN")
                         .requestMatchers("/cars/edit/**").hasRole("ADMIN")
                         .requestMatchers("/cars").permitAll()
                         .requestMatchers("/bookings").authenticated()
@@ -43,6 +43,9 @@ public class SecurityConfig {
                         .requestMatchers("/chat", "/chat/**", "/ws/**", "/topic/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/profile").authenticated()
+                )
+                .exceptionHandling(ex -> ex
+                        .accessDeniedPage("/403") // Redirect to custom 403 page
                 )
                 .formLogin(form -> form
                         .loginPage("/login")

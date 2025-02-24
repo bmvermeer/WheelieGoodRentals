@@ -24,9 +24,9 @@
         </div>
         <button type="submit" class="btn btn-primary">Update Profile</button>
     </form>
-    <div th:if="${param.success}">
-        <p class="text-success">Profile updated successfully!</p>
-    </div>
+<!--    <div th:if="${param.success}">-->
+<!--        <p class="text-success">Profile updated successfully!</p>-->
+<!--    </div>-->
 </div>
 <hr>
 <div class="container mt-5">
@@ -40,12 +40,12 @@
     </form>
 
     <!-- List of uploaded files -->
-    <ul>
-        <li th:each="file : ${files}">
+    <ul class="list-group mt-3">
+        <li th:each="file : ${files}" class="list-group-item d-flex justify-content-between align-items-center">
             <a th:href="@{'/upload/' + ${user.username} + '/' + ${file}}" th:text="${file}"></a>
             <form th:action="@{/profile/delete}" method="post" style="display:inline;">
                 <input type="hidden" name="fileName" th:value="${user.username} + '/' + ${file}">
-                <button type="submit" class="btn btn-link">
+                <button type="submit" class="btn btn-link p-0">
                     <img src="/images/delete-icon.png" alt="Delete" style="width:16px;height:16px;">
                 </button>
             </form>

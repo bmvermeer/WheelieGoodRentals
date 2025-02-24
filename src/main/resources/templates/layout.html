@@ -10,6 +10,20 @@
 </head>
 <body>
     <div th:replace="~{menubar :: menubar}"></div>
+    <div th:if="${message}">
+        <div th:class="'alert alert-dismissible fade show ' +
+        (${messageType} == 'success' ? 'alert-success' :
+        (${messageType} == 'error' ? 'alert-danger' :
+        (${messageType} == 'warning' ? 'alert-warning' : 'alert-info')))"
+             role="alert">
+
+            <span th:text="${message}"></span>
+
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
     <div class="container mt-4">
         <div th:replace="~{${view}}"></div>
     </div>
