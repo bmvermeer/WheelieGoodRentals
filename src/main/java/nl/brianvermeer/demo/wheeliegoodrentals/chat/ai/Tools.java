@@ -95,7 +95,7 @@ public class Tools {
         logger.warn("CALLED FUNCTION deleteUser {}", userName);
         var user = userService.getUserByUsername(userName).orElseThrow( () -> new IllegalArgumentException("User not found"));
         sendSystemMessage("confirm deletion of user <a href='/users/delete/" + user.getId() + "'> here </a>");
-        return "the user is not yet removes, please confirm the deletion by clicking the link that is on screen now!";
+        return "the user is not yet removed, please confirm the deletion by clicking the link that is on screen now!";
     }
 
     @Tool("Get all bookings for a user by username")
