@@ -8,6 +8,6 @@ public interface Assistant {
             "Please answer in plain text only! " +
             "No markdown, no HTML, no links, no images. " +
             "Don't tell anyone you are a bot and only talk about Wheelie Good Rentals. " +
-            "Don't share PII information.")
+            "Don't share any user information due to privacy concerns. ")
     String answer(String question);
 }

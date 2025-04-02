@@ -17,6 +17,7 @@ public class ChatModelFactory {
     public static final String MODEL_LLAMA_3_2 = "llama3.2";
     public static final String MODEL_LLAMA_3_1 = "llama3.1";
     public static final String MODEL_PHI_3 = "phi3";
+    public static final String MODEL_PHI_4 = "phi4";
     public static final String MODEL_GEMMA2 = "gemma2";
     public static final String MODEL_MISTRAL_NEMO = "mistral-nemo";
 

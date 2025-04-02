@@ -107,6 +107,13 @@ public class Tools {
         return bookings.stream().map(Booking::toString).reduce("", (x, y) -> x + y + "\n");
     }
 
+    @Tool("Get all users")
+    public String getAllUsers(Object a) {
+        logger.warn("CALLED FUNCTION getAllUsers {}", a);
+        var user = userService.getAllUsers();
+        return user.stream().map(User::toString).reduce("", (x, y) -> x + y + "\n");
+    }
+
     private void sendSystemMessage(String message) {
         messagingTemplate.convertAndSend("/topic/messages", new ChatMessage("System", message));
     }

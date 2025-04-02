@@ -2,6 +2,8 @@ package nl.brianvermeer.demo.wheeliegoodrentals.chat;
 
 import nl.brianvermeer.demo.wheeliegoodrentals.chat.ai.Assistant;
 import nl.brianvermeer.demo.wheeliegoodrentals.chat.ai.AssistantFactory;
+import nl.brianvermeer.demo.wheeliegoodrentals.chat.ai.Sanitizer;
+import nl.brianvermeer.demo.wheeliegoodrentals.chat.ai.SanitizerService;
 import nl.brianvermeer.demo.wheeliegoodrentals.repository.ChatMessageRepository;
 import nl.brianvermeer.demo.wheeliegoodrentals.repository.ConversationRepository;
 import org.slf4j.Logger;
@@ -30,16 +32,17 @@ public class ChatController {
     private ChatMessageRepository chatMessageRepository;
     private ConversationRepository conversationRepository;
     private AssistantFactory assistantFactory;
-    private SimpMessagingTemplate messagingTemplate;
+    private SanitizerService sanitizerService;
 
     public Map<String, ChatContext> sessions = new HashMap<>();
 
-    public ChatController(ChatMessageRepository chatMessageRepository, ConversationRepository conversationRepository, AssistantFactory assistantFactory, SimpMessagingTemplate messagingTemplate) {
+    public ChatController(ChatMessageRepository chatMessageRepository, ConversationRepository conversationRepository, AssistantFactory assistantFactory, SanitizerService sanitizerService ) {
         this.chatMessageRepository = chatMessageRepository;
         this.conversationRepository = conversationRepository;
         this.assistantFactory = assistantFactory;
-        this.messagingTemplate = messagingTemplate;
+        this.sanitizerService = sanitizerService;
     }
+
 
     @MessageMapping("/message")
     @SendTo("/topic/messages")
@@ -52,16 +55,24 @@ public class ChatController {
 
         var assistant = context.assistant;
         String response = "";
-        for (int i = 0; i < 3; i++) {
-            try {
-                response = assistant.answer(message.getContent());
-                break;
-            } catch (Exception e) {
-                logger.error("Operation failed, retrying", e);
+
+        if (!sanitizerService.isSafe(message.getContent())) {
+            response = "Malicious input detected!";
+        } else {
+
+            for (int i = 0; i < 3; i++) {
+                try {
+                    response = assistant.answer(message.getContent());
+                    break;
+                } catch (Exception e) {
+                    logger.error("Operation failed, retrying", e);
+                }
+                response = "Something went wrong, please try again";
             }
-            response = "Something went wrong, please try again";
         }
+
         var botResponse = new ChatMessage("Assistant", response);
+
 
         Conversation conversation = context.getConversation();
         message.setConversation(conversation);
