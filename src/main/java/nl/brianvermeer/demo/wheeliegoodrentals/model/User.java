@@ -31,6 +31,9 @@ public class User {
     @Size(min = 5, max = 15)
     private String phoneNumber;
 
+    @Column
+    private String address;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -42,7 +45,7 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String username, String password, String email, String phoneNumber, Role role, Set<Booking> rentals) {
+    public User(Long id, String username, String password, String email, String phoneNumber, Role role, Set<Booking> rentals, String address) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -50,6 +53,7 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.role = role;
         this.rentals = rentals;
+        this.address = address;
     }
 
     // Getters and setters
@@ -93,6 +97,14 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public Role getRole() {
         return role;
     }
@@ -132,6 +144,7 @@ public class User {
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
+                ", address='" + address + '\'' +
                 ", roles=" + role +
                 '}';
     }

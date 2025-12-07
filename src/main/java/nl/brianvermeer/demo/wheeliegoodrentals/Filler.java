@@ -41,16 +41,23 @@ public class Filler {
     }
 
     public void createStaticData() {
-        var user = userService.createUser("brian", "brian", "brian@brianvermeer.nl", "+31612345678", Role.USER);
+        var user = userService.createUser("brian", "brian", "brian@brianvermeer.nl", "+31612345678", "Brianstraat 1, 1234AB Amsterdam", Role.USER);
         var car = carService.createCar("1-ABC-123", "Model S", "Tesla", 160.0);
         bookingService.createBooking(user, car, LocalDate.now().plusDays(1), LocalDate.now().plusDays(2), "abc-123");
         bookingService.createBooking(user, car, LocalDate.now().plusDays(15), LocalDate.now().plusDays(20), "xyz-321");
 
-        userService.createUser("admin", "admin", "admin@admin.nl", "+31612345678", Role.ADMIN);
+        userService.createUser("admin", "admin", "admin@admin.nl", "+31612345678", "Adminlaan 99, 4321ZX Rotterdam", Role.ADMIN);
     }
 
     public void createUser() {
-        userService.createUser(faker.name().username(), faker.internet().password(), faker.internet().emailAddress(), faker.phoneNumber().cellPhone(), Role.USER);
+        userService.createUser(
+            faker.name().username(),
+            faker.internet().password(),
+            faker.internet().emailAddress(),
+            faker.phoneNumber().cellPhone(),
+            faker.address().fullAddress(),
+            Role.USER
+        );
     }
 
     public void createUsers(int amount) {

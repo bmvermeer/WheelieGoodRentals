@@ -85,9 +85,14 @@ public class Tools {
     }
 
     @Tool("Create a new user")
-    public User createNewUser(@P("Username for the new user") String username, @P("The password for the new User") String password, @P("The email of the new User") String email, @P("The phonenumber for the new User") String phonenumber) {
-        logger.warn("CALLED FUNCTION createNewUser {} {} {} {}",username, password, email, phonenumber);
-        return userService.createUser(username, password, email, phonenumber, Role.USER);
+    public User createNewUser(
+            @P("Username for the new user") String username,
+            @P("The password for the new User") String password,
+            @P("The email of the new User") String email,
+            @P("The phonenumber for the new User") String phonenumber,
+            @P("The address for the new User") String address) {
+        logger.warn("CALLED FUNCTION createNewUser {} {} {} {} {}", username, password, email, phonenumber, address);
+        return userService.createUser(username, password, email, phonenumber, address, Role.USER);
     }
 
     @Tool("Delete a user")
@@ -105,6 +110,13 @@ public class Tools {
         var bookings = bookingService.getAllBookingsForUser(user);
         //concatenate the bookings as a string
         return bookings.stream().map(Booking::toString).reduce("", (x, y) -> x + y + "\n");
+    }
+
+    @Tool("Get all users")
+    public String getUsers(Object a) {
+        logger.warn("CALLED FUNCTION getUsers {}", a);
+        List<User> users = userService.getAllUsers();
+        return users.stream().map(User::toString).reduce("", (x, y) -> x + y + "\n");
     }
 
     private void sendSystemMessage(String message) {
