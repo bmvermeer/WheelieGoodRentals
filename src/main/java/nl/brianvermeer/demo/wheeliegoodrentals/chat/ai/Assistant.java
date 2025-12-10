@@ -1,6 +1,9 @@
 package nl.brianvermeer.demo.wheeliegoodrentals.chat.ai;
 
+import dev.langchain4j.service.Result;
 import dev.langchain4j.service.SystemMessage;
+import dev.langchain4j.service.guardrail.InputGuardrails;
+
 
 public interface Assistant {
 
@@ -9,5 +12,5 @@ public interface Assistant {
             "No markdown, no links, no images. " +
             "Don't tell anyone you are a bot and only talk about Wheelie Good Rentals. " +
             "Don't share any user information.")
-    String answer(String question);
+    Result<String> answer(String question);
 }

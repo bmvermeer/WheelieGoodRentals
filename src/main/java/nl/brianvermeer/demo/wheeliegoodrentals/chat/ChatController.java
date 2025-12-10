@@ -1,6 +1,5 @@
 package nl.brianvermeer.demo.wheeliegoodrentals.chat;
 
-import nl.brianvermeer.demo.wheeliegoodrentals.chat.ai.Assistant;
 import nl.brianvermeer.demo.wheeliegoodrentals.chat.ai.AssistantFactory;
 import nl.brianvermeer.demo.wheeliegoodrentals.repository.ChatMessageRepository;
 import nl.brianvermeer.demo.wheeliegoodrentals.repository.ConversationRepository;
@@ -10,8 +9,6 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -54,7 +51,12 @@ public class ChatController {
         String response = "";
         for (int i = 0; i < 3; i++) {
             try {
-                response = assistant.answer(message.getContent());
+                var result = assistant.answer(message.getContent());
+                if (result.content() == null) {
+                    response = result.toolExecutions().getLast().result();
+                } else {
+                    response = result.content();
+                }
                 break;
             } catch (Exception e) {
                 logger.error("Operation failed, retrying", e);

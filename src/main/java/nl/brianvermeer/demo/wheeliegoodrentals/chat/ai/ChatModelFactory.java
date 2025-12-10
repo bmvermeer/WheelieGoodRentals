@@ -1,6 +1,6 @@
 package nl.brianvermeer.demo.wheeliegoodrentals.chat.ai;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModelName;
@@ -24,11 +24,11 @@ public class ChatModelFactory {
     private String API_KEY;
 
 
-    public ChatLanguageModel createOllamaChatModel() {
+    public ChatModel createOllamaChatModel() {
         return createOllamaChatModel(MODEL_LLAMA_3_1);
     }
 
-    public ChatLanguageModel createOllamaChatModel(String modelName) {
+    public ChatModel createOllamaChatModel(String modelName) {
         return OllamaChatModel.builder()
                 .baseUrl(BASE_URL)
                 .modelName(modelName)
@@ -36,7 +36,7 @@ public class ChatModelFactory {
                 .build();
     }
 
-    public ChatLanguageModel createOpenAiChatModel() {
+    public ChatModel createOpenAiChatModel() {
         return OpenAiChatModel.builder()
                 .apiKey(API_KEY)
                 .modelName(OpenAiChatModelName.GPT_4_O)

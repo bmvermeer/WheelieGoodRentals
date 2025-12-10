@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.6</version>
+        <version>3.5.8</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>nl.brianvermeer.demo</groupId>
@@ -28,8 +28,10 @@
     </scm>
     <properties>
         <java.version>21</java.version>
-        <faker.version>1.7.0</faker.version>
-        <langchain4j.version>0.36.2</langchain4j.version>
+        <faker.version>2.5.3</faker.version>
+        <langchain4j.version>1.9.1</langchain4j.version>
+        <langchain4j.embeddings.version>1.9.1-beta17</langchain4j.embeddings.version>
+        <jackson.databind.version>2.20.1</jackson.databind.version>
     </properties>
     <dependencies>
         <dependency>
@@ -104,12 +106,12 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-embeddings-bge-small-en-v15-q</artifactId>
-            <version>${langchain4j.version}</version>
+            <version>${langchain4j.embeddings.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.17.2</version>
+            <version>${jackson.databind.version}</version>
         </dependency>
     </dependencies>
 

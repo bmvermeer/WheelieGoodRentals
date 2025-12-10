@@ -1,6 +1,7 @@
 package nl.brianvermeer.demo.wheeliegoodrentals.chat.ai;
 
 import dev.langchain4j.agent.tool.P;
+import dev.langchain4j.agent.tool.ReturnBehavior;
 import dev.langchain4j.agent.tool.Tool;
 import nl.brianvermeer.demo.wheeliegoodrentals.chat.ChatMessage;
 import nl.brianvermeer.demo.wheeliegoodrentals.model.Booking;
@@ -95,12 +96,12 @@ public class Tools {
         return userService.createUser(username, password, email, phonenumber, address, Role.USER);
     }
 
-    @Tool("Delete a user")
+    @Tool(returnBehavior = ReturnBehavior.IMMEDIATE)
     public String deleteUser(@P("username of the user") String userName) {
         logger.warn("CALLED FUNCTION deleteUser {}", userName);
         var user = userService.getUserByUsername(userName).orElseThrow( () -> new IllegalArgumentException("User not found"));
         sendSystemMessage("confirm deletion of user <a href='/users/delete/" + user.getId() + "'> here </a>");
-        return "the user is not yet removed, please confirm the deletion by clicking the link that is on screen now!";
+        return "the user is not yet removed, please confirm the deletion by clicking the link that is on screen now";
     }
 
     @Tool("Get all bookings for a user by username")

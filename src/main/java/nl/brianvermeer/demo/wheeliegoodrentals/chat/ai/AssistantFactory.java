@@ -66,9 +66,9 @@ public class AssistantFactory {
                 chatMemory.add(new AiMessage(mes.getContent()));
         }
 
-        return AiServices.builder(Assistant.class)
-                .chatLanguageModel(chatModelFactory.createOpenAiChatModel())
-//                .chatLanguageModel(chatModelFactory.createOllamaChatModel(ChatModelFactory.MODEL_LLAMA_3_1))
+        return  AiServices.builder(Assistant.class)
+                .chatModel(chatModelFactory.createOpenAiChatModel())
+//                .chatModel(chatModelFactory.createOllamaChatModel(ChatModelFactory.MODEL_LLAMA_3_1))
                 .chatMemory(chatMemory)
                 .contentRetriever(documentRetriever())
                 .tools(new Tools(carService, userService, bookingService, messagingTemplate))
