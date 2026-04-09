@@ -12,11 +12,13 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.bgesmallenv15q.BgeSmallEnV15QuantizedEmbeddingModel;
+import dev.langchain4j.model.openai.OpenAiChatModelName;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
+import jakarta.persistence.EntityManager;
 import nl.brianvermeer.demo.wheeliegoodrentals.chat.ChatMessage;
 import nl.brianvermeer.demo.wheeliegoodrentals.chat.Conversation;
 import nl.brianvermeer.demo.wheeliegoodrentals.repository.ChatMessageRepository;
@@ -67,8 +69,9 @@ public class AssistantFactory {
         }
 
         return AiServices.builder(Assistant.class)
-                .chatLanguageModel(chatModelFactory.createOpenAiChatModel())
-//                .chatLanguageModel(chatModelFactory.createOllamaChatModel(ChatModelFactory.MODEL_LLAMA_3_1))
+                .chatModel(chatModelFactory.createOpenAiChatModel(OpenAiChatModelName.GPT_4_O))
+//                .chatModel(chatModelFactory.createOpenAiChatModel(OpenAiChatModelName.GPT_3_5_TURBO))
+//                .chatModel(chatModelFactory.createOllamaChatModel(ChatModelFactory.MODEL_LLAMA_3_1))
                 .chatMemory(chatMemory)
                 .contentRetriever(documentRetriever())
                 .tools(new Tools(carService, userService, bookingService, messagingTemplate))

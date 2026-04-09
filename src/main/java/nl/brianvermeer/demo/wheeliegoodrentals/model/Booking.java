@@ -16,11 +16,11 @@ public class Booking {
     private LocalDate endDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "car_id")
+    @JoinColumn(name = "car_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Car car;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private User user;
 
     @Column(nullable = false)

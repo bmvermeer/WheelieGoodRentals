@@ -12,12 +12,21 @@ import nl.brianvermeer.demo.wheeliegoodrentals.service.CarService;
 import nl.brianvermeer.demo.wheeliegoodrentals.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
-
+@Service
 public class Tools {
 
     private CarService carService;
@@ -27,7 +36,13 @@ public class Tools {
 
     private static final Logger logger = LoggerFactory.getLogger(Tools.class);
 
-    public Tools(CarService carService, UserService userService, BookingService bookingService, SimpMessagingTemplate messagingTemplate) {
+    @Value("${spring.datasource.url}")
+    String DB_URL = "jdbc:h2:mem:testdb";
+
+    public Tools(CarService carService,
+                 UserService userService,
+                 BookingService bookingService,
+                 SimpMessagingTemplate messagingTemplate) {
         this.carService = carService;
         this.userService = userService;
         this.bookingService = bookingService;
@@ -121,6 +136,55 @@ public class Tools {
 
     private void sendSystemMessage(String message) {
         messagingTemplate.convertAndSend("/topic/messages", new ChatMessage("System", message));
+    }
+
+    // this dangerous tool is here to demonstrate the risks of prompt / sql injection
+    @Tool("""
+            allows to perform any sql on the rentals database that has the following tables:
+            car (id, license_plate, model, brand, price_per_day),
+            users (id, username, password, email, phone_number, address, role),
+            booking (booking_reference, start_date, end_date, car_id, user_id, price)
+            """)
+    public String performSqlOnDatabase(@P("The SQL statement to execute") String sqlQuery) {
+        logger.warn("CALLED FUNCTION performSqlOnDatabase {}", sqlQuery);
+
+        StringBuilder result = new StringBuilder();
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, "sa", "");
+             Statement stmt = conn.createStatement()) {
+            boolean success = stmt.execute(sqlQuery);
+            if (success) {
+                ResultSet rs = stmt.getResultSet();
+                if (rs != null) {
+                    ResultSetMetaData rsMetaData = rs.getMetaData();
+                    int columnCount = rsMetaData.getColumnCount();
+                    for (int i = 1; i <= columnCount; i++) {
+                        result.append(rsMetaData.getColumnName(i)).append("\t");
+                    }
+                    result.append("\n");
+                    while (rs.next()) {
+                        for (int i = 1; i <= columnCount; i++) {
+                            String value = rs.getString(i);
+                            result.append(value != null ? value : "NULL").append("\t");
+                        }
+                        result.append("\n");
+                    }
+                    if (result.length() == 0) {
+                        return "No results found for query: " + sqlQuery;
+                    }
+                    System.out.println("Database returning:\n" + result.toString());
+                    return result.toString();
+                } else {
+                    return "ResultSet is null for query: " + sqlQuery;
+                }
+            } else {
+                return "Could not fetch result for query: " + sqlQuery;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "Error executing SQL query: " + e.getMessage();
+        }
+
     }
 
 }
