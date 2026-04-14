@@ -40,15 +40,13 @@ public class AssistantFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(AssistantFactory.class);
 
-    private ChatModelFactory chatModelFactory;
     private ChatMessageRepository chatMessageRepository;
     private CarService carService;
     private UserService userService;
     private BookingService bookingService;
     private SimpMessagingTemplate messagingTemplate;
 
-    public AssistantFactory(ChatModelFactory chatModelFactory,ChatMessageRepository chatMessageRepository, CarService carService, UserService userService, BookingService bookingService, SimpMessagingTemplate messagingTemplate) {
-        this.chatModelFactory = chatModelFactory;
+    public AssistantFactory(ChatMessageRepository chatMessageRepository, CarService carService, UserService userService, BookingService bookingService, SimpMessagingTemplate messagingTemplate) {
         this.chatMessageRepository = chatMessageRepository;
         this.carService = carService;
         this.userService = userService;
@@ -69,9 +67,9 @@ public class AssistantFactory {
         }
 
         return AiServices.builder(Assistant.class)
-                .chatModel(chatModelFactory.createOpenAiChatModel(OpenAiChatModelName.GPT_4_O))
-//                .chatModel(chatModelFactory.createOpenAiChatModel(OpenAiChatModelName.GPT_3_5_TURBO))
-//                .chatModel(chatModelFactory.createOllamaChatModel(ChatModelFactory.MODEL_LLAMA_3_1))
+                .chatModel(ChatModelFactory.createOpenAiChatModel(OpenAiChatModelName.GPT_4_O))
+//                .chatModel(ChatModelFactory.createOpenAiChatModel(OpenAiChatModelName.GPT_3_5_TURBO))
+//                .chatModel(ChatModelFactory.createOllamaChatModel(ChatModelFactory.MODEL_LLAMA_3_1))
                 .chatMemory(chatMemory)
                 .contentRetriever(documentRetriever())
                 .tools(new Tools(carService, userService, bookingService, messagingTemplate))
