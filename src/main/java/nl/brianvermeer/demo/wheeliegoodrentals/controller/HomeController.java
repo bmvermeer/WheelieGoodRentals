@@ -2,6 +2,7 @@ package nl.brianvermeer.demo.wheeliegoodrentals.controller;
 
 import nl.brianvermeer.demo.wheeliegoodrentals.model.Booking;
 import nl.brianvermeer.demo.wheeliegoodrentals.service.BookingService;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -65,5 +67,11 @@ public class HomeController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=terms-of-use.txt")
                 .body(resource);
+    }
+
+    @GetMapping(value = "/notes.md", produces = "text/plain")
+    @ResponseBody
+    public Resource notes() {
+        return new ClassPathResource("static/notes.md");
     }
 }
