@@ -12,11 +12,13 @@ import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.bgesmallenv15q.BgeSmallEnV15QuantizedEmbeddingModel;
+import dev.langchain4j.model.openai.OpenAiChatModelName;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
+import jakarta.persistence.EntityManager;
 import nl.brianvermeer.demo.wheeliegoodrentals.chat.ChatMessage;
 import nl.brianvermeer.demo.wheeliegoodrentals.chat.Conversation;
 import nl.brianvermeer.demo.wheeliegoodrentals.repository.ChatMessageRepository;
@@ -38,15 +40,13 @@ public class AssistantFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(AssistantFactory.class);
 
-    private ChatModelFactory chatModelFactory;
     private ChatMessageRepository chatMessageRepository;
     private CarService carService;
     private UserService userService;
     private BookingService bookingService;
     private SimpMessagingTemplate messagingTemplate;
 
-    public AssistantFactory(ChatModelFactory chatModelFactory,ChatMessageRepository chatMessageRepository, CarService carService, UserService userService, BookingService bookingService, SimpMessagingTemplate messagingTemplate) {
-        this.chatModelFactory = chatModelFactory;
+    public AssistantFactory(ChatMessageRepository chatMessageRepository, CarService carService, UserService userService, BookingService bookingService, SimpMessagingTemplate messagingTemplate) {
         this.chatMessageRepository = chatMessageRepository;
         this.carService = carService;
         this.userService = userService;
@@ -67,8 +67,9 @@ public class AssistantFactory {
         }
 
         return AiServices.builder(Assistant.class)
-                .chatLanguageModel(chatModelFactory.createOpenAiChatModel())
-//                .chatLanguageModel(chatModelFactory.createOllamaChatModel(ChatModelFactory.MODEL_LLAMA_3_1))
+                .chatModel(ChatModelFactory.createOpenAiChatModel(OpenAiChatModelName.GPT_4_O))
+//                .chatModel(ChatModelFactory.createOpenAiChatModel(OpenAiChatModelName.GPT_3_5_TURBO))
+//                .chatModel(ChatModelFactory.createOllamaChatModel(ChatModelFactory.MODEL_LLAMA_3_1))
                 .chatMemory(chatMemory)
                 .contentRetriever(documentRetriever())
                 .tools(new Tools(carService, userService, bookingService, messagingTemplate))

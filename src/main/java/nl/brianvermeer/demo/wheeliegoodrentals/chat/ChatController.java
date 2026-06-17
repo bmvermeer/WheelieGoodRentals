@@ -1,5 +1,6 @@
 package nl.brianvermeer.demo.wheeliegoodrentals.chat;
 
+import dev.langchain4j.guardrail.InputGuardrailException;
 import nl.brianvermeer.demo.wheeliegoodrentals.chat.ai.Assistant;
 import nl.brianvermeer.demo.wheeliegoodrentals.chat.ai.AssistantFactory;
 import nl.brianvermeer.demo.wheeliegoodrentals.repository.ChatMessageRepository;
@@ -55,6 +56,10 @@ public class ChatController {
         for (int i = 0; i < 3; i++) {
             try {
                 response = assistant.answer(message.getContent());
+                break;
+            } catch (InputGuardrailException e) {
+                logger.warn("Malicious input detected for session {}: {}", sessionId, e.getMessage());
+                response = "I cannot process that request.";
                 break;
             } catch (Exception e) {
                 logger.error("Operation failed, retrying", e);
