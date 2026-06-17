@@ -18,7 +18,7 @@ public class ChatModelFactory {
     public static final String MODEL_GEMMA2 = "gemma2";
     public static final String MODEL_MISTRAL_NEMO = "mistral-nemo";
 
-    private static String API_KEY = AppProps.getRequired("openai.api.key");;
+    private static String API_KEY = AppProps.getRequired("openai.api.key");
 
     public static ChatModel createOllamaChatModel(String modelName) {
         return OllamaChatModel.builder()
@@ -33,6 +33,13 @@ public class ChatModelFactory {
                 .apiKey(API_KEY)
                 .modelName(name)
                 .temperature(TEMPERATURE)
+                .build();
+    }
+
+    public static ChatModel createOpenAiChatModel(String name) {
+        return OpenAiChatModel.builder()
+                .apiKey(API_KEY)
+                .modelName(name)
                 .build();
     }
 
