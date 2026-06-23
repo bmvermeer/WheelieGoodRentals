@@ -36,29 +36,11 @@ Wheelie Good Rentals is a vehicle rental service application built using Spring 
     cd wheelie-good-rentals
     ```
 
-2. Create an `application.properties` file in the `src/main/resources` directory with the following content:
-    ```properties
-    spring.application.name=WheelieGoodRentals
-
-    server.port=8080
-    server.servlet.session.cookie.http-only=false
-
-    spring.h2.console.enabled=true
-    spring.datasource.url=jdbc:h2:mem:testdb
-    spring.datasource.driverClassName=org.h2.Driver
-    spring.datasource.username=
-    spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
-    spring.jpa.show-sql=false
-
-    spring.security.user.name=brian
-    spring.security.user.password=
-
-    spring.jpa.defer-datasource-initialization=true
-
-    spring.thymeleaf.cache=false
-
-    openai.api.key=
-    ```
+2. The `application.properties` file is already checked in at `src/main/resources/application.properties`.
+   The `openai.api.key` setting reads from the `OPENAI_API_KEY` environment variable:
+   ```sh
+   export OPENAI_API_KEY="your-openai-api-key"
+   ```
 
 3. Build the project:
     ```sh
@@ -72,7 +54,7 @@ Wheelie Good Rentals is a vehicle rental service application built using Spring 
 
 ### Accessing the Application
 
-- The application will be available at `http://localhost:8080`.
+- The application will be available at `http://localhost:8084`.
 
 ## License
 
